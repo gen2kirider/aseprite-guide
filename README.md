@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aseprite 日本語ガイド（非公式）
 
-## Getting Started
+Aseprite の使い方を日本語でわかりやすく解説するファンメイドガイドサイトです。
 
-First, run the development server:
+> **注意**: 本サイトは非公式です。Aseprite および Igara Studio とは一切関係ありません。
+
+## コンテンツ
+
+- **基本操作** — はじめかた、ツール紹介、ブラシ設定など
+- **色とパレット** — パレットの使い方、インデックスカラー、色の一括調整
+- **アニメーション** — フレーム・タイムライン、オニオンスキン、リンクセルなど
+- **タイルマップ** — タイルマップの基本、タイルパレット
+- **編集テクニック** — 選択範囲、変形、レイヤー、ブレンドモード、アウトライン
+- **ショートカット** — 一覧、カスタマイズ方法
+- **エクスポート** — 基本、スプライトシート、GIF書き出し、スライス
+
+## 技術スタック
+
+- [Next.js](https://nextjs.org/) (App Router)
+- [Tailwind CSS](https://tailwindcss.com/) v4
+- MDX（[next-mdx-remote](https://github.com/hashicorp/next-mdx-remote)）
+
+## ローカルで動かす
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+http://localhost:3000 で確認できます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 記事の追加
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`content/{カテゴリー}/{slug}.mdx` にファイルを作成してください。
 
-## Learn More
+```mdx
+---
+title: 記事タイトル
+description: 記事の説明
+order: 1
+---
 
-To learn more about Next.js, take a look at the following resources:
+本文をここに書く
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+記事を追加・変更したら検索インデックスを再生成します：
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+node scripts/generate-search-index.mjs
+```
