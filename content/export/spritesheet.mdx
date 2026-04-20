@@ -1,0 +1,136 @@
+---
+title: スプライトシート書き出し
+description: ゲーム開発で必須のスプライトシート書き出し方法を、設定項目ごとに詳しく解説します。
+order: 2
+---
+
+## スプライトシートとは
+
+<Term id="spritesheet">スプライトシート</Term>は、複数の
+<Term id="frame">フレーム</Term>やアニメーションを **1枚の画像にまとめたもの**
+です。ゲームエンジン（Unity、Godotなど）でアニメーションを扱う際の標準的なフォーマットです。
+
+## 書き出し方法
+
+**File > Export Sprite Sheet**（`Ctrl+Shift+E`）で書き出しダイアログが開きます。
+
+## 設定項目の解説
+
+### Layout（レイアウト）
+
+<Term id="sprite">スプライト</Term>の並べ方を選びます：
+
+| レイアウト       | 説明               | 向いている用途           |
+| ---------------- | ------------------ | ------------------------ |
+| Horizontal Strip | 横一列に並べる     | シンプルなアニメーション |
+| Vertical Strip   | 縦一列に並べる     | 一部のゲームエンジン向け |
+| By Rows          | 指定列数で折り返し | 大量フレームのとき       |
+| By Columns       | 指定行数で折り返し | あまり使わない           |
+| Packed           | 最小面積に自動配置 | テクスチャアトラス       |
+
+> ゲーム開発では **By Rows** か **Packed** がよく使われます。
+
+### Constraints（制約）
+
+- **Fixed Width / Height** — 出力画像のサイズを固定
+- **Fixed Rows / Columns** — 行数・列数を固定
+- **Best fit** — 最適なサイズを自動計算
+
+### Padding（余白）
+
+- **Border Padding** — シート全体の外周余白
+- **Shape Padding** — 各フレーム間の余白
+- **Inner Padding** — 各フレーム内側の余白
+
+> GPUのテクスチャブリーディング対策に、**Shape Padding を 1〜2px** 入れるのが一般的です。隣のスプライトの色がにじむ問題を防げます。
+
+### Output（出力）
+
+- **Output File** — 画像ファイルの保存先（.png推奨）
+- **JSON Data** — フレーム座標情報をJSONで書き出す
+
+> JSON出力は **必ずONにしましょう**。ゲームエンジンでフレームの位置やサイズを自動で読み取れます。
+
+## JSON出力の種類
+
+### Array（配列）
+
+```json
+{
+  "frames": [
+    {
+      "filename": "sprite 0.aseprite",
+      "frame": { "x": 0, "y": 0, "w": 32, "h": 32 },
+      "duration": 100
+    }
+  ]
+}
+```
+
+### Hash（ハッシュ）
+
+```json
+{
+  "frames": {
+    "sprite 0.aseprite": {
+      "frame": { "x": 0, "y": 0, "w": 32, "h": 32 },
+      "duration": 100
+    }
+  }
+}
+```
+
+Unity は **Array** 形式、Godot はどちらでも対応しています。
+
+## ゲームエンジン別の設定
+
+### Unity向け
+
+| 設定          | 値          |
+| ------------- | ----------- |
+| Layout        | By Rows     |
+| JSON Data     | ON（Array） |
+| Shape Padding | 1px         |
+| Trim          | OFF推奨     |
+
+Unityの場合、JSONを読み込まなくても **Sprite Editor** のスライス機能で分割できます。ただしJSON があると自動で正確に分割されるので楽です。
+
+### Godot向け
+
+| 設定          | 値      |
+| ------------- | ------- |
+| Layout        | By Rows |
+| JSON Data     | ON      |
+| Shape Padding | 0〜1px  |
+| Trim          | OFF     |
+
+Godotの **AnimatedSprite2D** でスプライトシートを直接読み込めます。
+
+## タグごとの書き出し
+
+タグ（Tag）を設定している場合、**タグ単位で別々のスプライトシート** に書き出せます：
+
+1. Export Sprite Sheet を開く
+2. **Layers** タブで対象レイヤーを選択
+3. **Frames** タブで特定のタグだけ選択
+4. 各タグごとに書き出し
+
+> Aseprite CLI を使うと、タグごとの一括書き出しをスクリプトで自動化できます。
+
+## 💡 Tips
+
+### Trim Sprite の使い方
+
+**Trim Sprite** をONにすると、各フレームの透明部分を自動で切り詰めます。ファイルサイズは小さくなりますが、ゲームエンジン側でピボット位置の調整が必要になることがあります。
+
+### 2のべき乗サイズ
+
+一部のゲームエンジンやGPUでは、テクスチャサイズが **2のべき乗**（256×256, 512×512 等）だとパフォーマンスが良くなります。**Fixed Width / Height** で2のべき乗に合わせるか、**Extrude** で余白を埋めましょう。
+
+### コマンドラインで自動化
+
+```bash
+aseprite -b sprite.aseprite --sheet sprite-sheet.png --data sprite-sheet.json
+```
+
+CIパイプラインに組み込んで、Asepriteファイルの変更時に自動でスプライトシートを書き出す運用ができます。
