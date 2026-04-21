@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { categories } from "@/lib/categories";
@@ -9,6 +10,33 @@ export function generateStaticParams() {
 
 interface Props {
   params: Promise<{ category: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { category } = await params;
+  const cat = categories.find((c) => c.slug === category);
+
+  if (!cat) {
+    return {
+      title: "カテゴリー",
+      description: "Aseprite日本語ガイドのカテゴリーページ。",
+    };
+  }
+
+  return {
+    title: `${cat.name}の使い方`,
+    description: cat.description,
+    alternates: {
+      canonical: `/${cat.slug}`,
+    },
+    openGraph: {
+      title: `${cat.name} | Aseprite日本語ガイド`,
+      description: cat.description,
+      url: `/${cat.slug}`,
+      locale: "ja_JP",
+      type: "website",
+    },
+  };
 }
 
 export default async function CategoryPage({ params }: Props) {

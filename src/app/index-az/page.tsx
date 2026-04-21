@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { categories } from "@/lib/categories";
 import { getArticlesByCategory } from "@/lib/content";
+
+export const metadata: Metadata = {
+  title: "A〜Z辞典",
+  description:
+    "Aseprite日本語ガイドの全記事をアルファベット・五十音順で一覧できるページです。",
+  alternates: {
+    canonical: "/index-az",
+  },
+};
 
 export default function IndexAZPage() {
   const allArticles = categories.flatMap((cat) => {

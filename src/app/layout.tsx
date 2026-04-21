@@ -12,8 +12,53 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "Aseprite日本語ガイド",
-  description: "Asepriteの使い方を1からわかりやすく解説する日本語ガイドサイト",
+  metadataBase: new URL("https://aseprite-guide.vercel.app"),
+  title: {
+    default: "Aseprite日本語ガイド",
+    template: "%s | Aseprite日本語ガイド",
+  },
+  description:
+    "Asepriteの使い方を日本語で解説する非公式ガイド。基本操作、パレット、アニメーション、タイルマップ、書き出しまで網羅。",
+  applicationName: "Aseprite日本語ガイド",
+  alternates: {
+    canonical: "/",
+  },
+  keywords: [
+    "Aseprite",
+    "Aseprite 使い方",
+    "Aseprite 日本語",
+    "ドット絵",
+    "ピクセルアート",
+    "スプライト",
+    "アニメーション",
+    "タイルマップ",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    siteName: "Aseprite日本語ガイド",
+    url: "/",
+    title: "Aseprite日本語ガイド",
+    description:
+      "Asepriteの使い方を日本語で解説する非公式ガイド。初心者向けから実践テクニックまで。",
+  },
+  twitter: {
+    card: "summary",
+    title: "Aseprite日本語ガイド",
+    description:
+      "Asepriteの使い方を日本語で解説する非公式ガイド。基本操作から実践テクニックまで。",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
 };
 
 export default function RootLayout({

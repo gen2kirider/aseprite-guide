@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -25,6 +26,39 @@ interface Props {
   params: Promise<{ category: string; slug: string }>;
 }
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { category, slug } = await params;
+  const cat = categories.find((c) => c.slug === category);
+  const article = getArticle(category, slug);
+
+  if (!cat || !article) {
+    return {
+      title: "記事",
+      description: "Aseprite日本語ガイドの記事ページ。",
+    };
+  }
+
+  return {
+    title: article.title,
+    description: article.description,
+    alternates: {
+      canonical: `/${category}/${slug}`,
+    },
+    openGraph: {
+      type: "article",
+      locale: "ja_JP",
+      title: `${article.title} | Aseprite日本語ガイド`,
+      description: article.description,
+      url: `/${category}/${slug}`,
+    },
+    twitter: {
+      card: "summary",
+      title: `${article.title} | Aseprite日本語ガイド`,
+      description: article.description,
+    },
+  };
+}
+
 export default async function ArticlePage({ params }: Props) {
   const { category, slug } = await params;
   const cat = categories.find((c) => c.slug === category);
@@ -39,8 +73,56 @@ export default async function ArticlePage({ params }: Props) {
   const next =
     currentIndex < siblings.length - 1 ? siblings[currentIndex + 1] : null;
 
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.description,
+    inLanguage: "ja",
+    mainEntityOfPage: `https://aseprite-guide.vercel.app/${category}/${slug}`,
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Aseprite日本語ガイド",
+      url: "https://aseprite-guide.vercel.app/",
+    },
+    articleSection: cat.name,
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "ホーム",
+        item: "https://aseprite-guide.vercel.app/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: cat.name,
+        item: `https://aseprite-guide.vercel.app/${category}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: article.title,
+        item: `https://aseprite-guide.vercel.app/${category}/${slug}`,
+      },
+    ],
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* Breadcrumb */}
       <nav className="mb-6 flex items-center gap-2 text-sm text-text-secondary">
         <Link href="/" className="hover:text-accent transition-colors">
